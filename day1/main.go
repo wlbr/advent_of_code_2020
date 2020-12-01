@@ -45,7 +45,7 @@ func search2(sum int, candidate int, data []int) (tupel [][]int) {
 
 func search3(sum int, candidate int, data []int) (tupel [][]int) {
 	for i, c := range data {
-		for _, d := range data[i:] {
+		for _, d := range data[i+1:] {
 			if candidate+c+d == sum {
 				tupel = append(tupel, []int{candidate, c, d})
 			}
@@ -59,7 +59,7 @@ func main() {
 
 	var res2 [][]int
 	for i, n := range d {
-		res2 = append(res2, search2(2020, n, d[i:])...)
+		res2 = append(res2, search2(2020, n, d[i+1:])...)
 	}
 	for _, t := range res2 {
 		fmt.Printf("2 components: %d\n", t[0]*t[1])
@@ -67,7 +67,7 @@ func main() {
 
 	var res3 [][]int
 	for i, n := range d {
-		res3 = append(res3, search3(2020, n, d[i:])...)
+		res3 = append(res3, search3(2020, n, d[i+1:])...)
 	}
 	for _, t := range res3 {
 		fmt.Printf("3 components: %d\n", t[0]*t[1]*t[2])
