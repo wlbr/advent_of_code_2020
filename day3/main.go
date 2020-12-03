@@ -49,6 +49,7 @@ func countTreesForSlope(torus []string, slopex, slopey int) int {
 func main() {
 	torus := readTorusMap(input)
 	fmt.Printf("There are %d trees.\n\n", countTreesForSlope(torus, 3, 1))
+
 	slopes := [][]int{{1, 1}, {3, 1}, {5, 1}, {7, 1}, {1, 2}}
 
 	var results []int
