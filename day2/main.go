@@ -60,6 +60,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error opening dataset '%s':  %s", input, err)
 	}
+	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 	count1 := 0

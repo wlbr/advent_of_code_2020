@@ -16,6 +16,7 @@ func readDataset(fname string) (data []int) {
 	if err != nil {
 		log.Fatalf("Error opening dataset '%s':  %s", input, err)
 	}
+	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 
