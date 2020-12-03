@@ -13,12 +13,12 @@ Specifically, they need you to find the two entries that sum to 2020 and then mu
 
 For example, suppose your expense report contained the following:
 
-1721<br>
-979<br>
-366<br>
-299<br>
-675<br>
-1456<br>
+    1721
+    979
+    366
+    299
+    675
+    1456
 
 In this list, the two entries that sum to 2020 are 1721 and 299. Multiplying them together produces 1721 * 299 = 514579, so the correct answer is 514579.
 
@@ -37,5 +37,3 @@ In your expense report, what is the product of the three entries that sum to 202
 > Your puzzle answer was 12747392.
 >
 > Both parts of this puzzle are complete! They provide two gold stars: **
-
-
