@@ -32,7 +32,7 @@ func readTorusMap(fname string) (data []string) {
 	return data
 }
 
-func countTreesSimpleSlope(torus []string, slopex, slopey int) int {
+func countTreesForSlope(torus []string, slopex, slopey int) int {
 	j := 0
 	treecount := 0
 	for i := 0; i < len(torus); i += slopey {
@@ -48,18 +48,17 @@ func countTreesSimpleSlope(torus []string, slopex, slopey int) int {
 
 func main() {
 	torus := readTorusMap(input)
-	fmt.Printf("There are %d trees.\n\n", countTreesSimpleSlope(torus, 3, 1))
+	fmt.Printf("There are %d trees.\n\n", countTreesForSlope(torus, 3, 1))
 	slopes := [][]int{{1, 1}, {3, 1}, {5, 1}, {7, 1}, {1, 2}}
 
 	var results []int
 	for _, s := range slopes {
-		results = append(results, countTreesSimpleSlope(torus, s[0], s[1]))
+		results = append(results, countTreesForSlope(torus, s[0], s[1]))
 		fmt.Printf("There are %d trees.\n", results[len(results)-1])
 	}
 	product := 1
 	for _, r := range results {
 		product = product * r
 	}
-	fmt.Printf("The overall product is %d.\n", product)
-
+	fmt.Printf("\nThe overall product is %d.\n", product)
 }
