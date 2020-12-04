@@ -58,13 +58,8 @@ func readPassports(fname string) (passports []map[string]string) {
 }
 
 func checkValidPassport(p map[string]string) (result bool) {
-	checks := []func(p map[string]string) (result bool){checkByr, checkIyr, checkEyr, checkHgt, checkEcl, checkHcl, checkPid, checkCid}
-	result = true
-	for _, c := range checks {
-		//log.Printf("%v - c(p): %t", p, c(p))
-		result = result && c(p)
-	}
-	return result
+	checks := []check{checkByr, checkIyr, checkEyr, checkHgt, checkEcl, checkHcl, checkPid, checkCid}
+	return and(p, checks...)
 }
 
 func main() {

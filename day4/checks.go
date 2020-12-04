@@ -1,9 +1,24 @@
 package main
 
 import (
+	"regexp"
 	"strconv"
-	"strings"
 )
+
+var hclrex *regexp.Regexp = regexp.MustCompile("^#([0-9a-f]{6})$")
+var eclrex *regexp.Regexp = regexp.MustCompile("^(amb|blu|brn|gry|grn|hzl|oth)$")
+var pidrex *regexp.Regexp = regexp.MustCompile("^(\\d{9})$")
+
+type check func(map[string]string) bool
+
+func and(p map[string]string, tests ...check) bool {
+	for _, c := range tests {
+		if !c(p) {
+			return false
+		}
+	}
+	return true
+}
 
 func checkNeededFields(p map[string]string) (result bool) {
 	needed := []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
@@ -32,6 +47,7 @@ func checkByr(p map[string]string) (result bool) {
 	}
 	return result
 }
+
 func checkIyr(p map[string]string) (result bool) {
 	//iyr (Issue Year) - four digits; at least 2010 and at most 2020.
 	iyr := p["iyr"]
@@ -40,6 +56,7 @@ func checkIyr(p map[string]string) (result bool) {
 	}
 	return result
 }
+
 func checkEyr(p map[string]string) (result bool) {
 	// eyr (Expiration Year) - four digits; at least 2020 and at most 2030.
 	eyr := p["eyr"]
@@ -67,41 +84,19 @@ func checkHgt(p map[string]string) (result bool) {
 func checkHcl(p map[string]string) (result bool) {
 	//hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
 	hcl := p["hcl"]
-	if len(hcl) == 7 {
-		if string(hcl[0]) == "#" {
-			result = true
-			for _, b := range hcl[1:] {
-				if !strings.Contains("0123456789abcdef", string(b)) {
-					result = false
-				}
-			}
-		}
-	}
-	return result
+	return hclrex.MatchString(hcl)
 }
+
 func checkEcl(p map[string]string) (result bool) {
 	// ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
 	ecl := p["ecl"]
-	colors := []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
-	for _, c := range colors {
-		if ecl == c {
-			result = true
-		}
-	}
-	return result
+	return eclrex.MatchString(ecl)
 }
+
 func checkPid(p map[string]string) (result bool) {
 	// pid (Passport ID) - a nine-digit number, including leading zeroes.
 	pid := p["pid"]
-	if len(pid) == 9 {
-		result = true
-		for _, b := range pid {
-			if !strings.Contains("0123456789", string(b)) {
-				result = false
-			}
-		}
-	}
-	return result
+	return pidrex.MatchString(pid)
 }
 
 func checkCid(p map[string]string) (result bool) {
