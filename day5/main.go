@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"math"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -13,6 +13,26 @@ var input string = "input.txt"
 
 const COLS = 8
 const ROWS = 128
+
+func calcCode(row, col int) string {
+	n := row*8 + col
+	c := fmt.Sprintf("%10b\n", n)
+
+	rr := strings.NewReplacer(" ", "F", "0", "F", "1", "B")
+	code := rr.Replace(c[:6])
+
+	cr := strings.NewReplacer("0", "L", "1", "R")
+	code = code + cr.Replace(c[6:])
+
+	return code
+}
+
+func calcSeatNo(code string) int {
+	r := strings.NewReplacer("F", "0", "B", "1", "L", "0", "R", "1")
+	code = r.Replace(code)
+	c, _ := strconv.ParseInt(code, 2, 64)
+	return int(c)
+}
 
 type seat struct {
 	pass string
@@ -23,58 +43,14 @@ type seat struct {
 
 func NewSeat(pass string) *seat {
 	s := &seat{pass: pass}
-	s.row, s.col = getPos(pass)
-	s.id = calcID(s.row, s.col)
+	s.id = calcSeatNo(pass)
+	s.row = s.id / COLS
+	s.col = s.id % COLS
 	return s
 }
 
-func (t *seat) String() string {
-	return fmt.Sprintf("pass:'%s' id:'%d' row:'%d' col:'%d", t.pass, t.id, t.row, t.col)
-}
-
-func calcID(row, col int) int {
-	return row*8 + col
-}
-
-func binsearch(code string, rows bool) int {
-	max := int(math.Pow(2, float64(len(code))))
-	lr := 0
-	mr := max - 1
-	discriminator := "f"
-	if !rows {
-		discriminator = "l"
-	}
-
-	for _, c := range code {
-		k := strings.ToLower(string(c))
-		if k == discriminator {
-			mr = mr - ((mr - lr) / 2) - 1
-		} else {
-			lr = lr + ((mr - lr) / 2) + 1
-		}
-	}
-	if rows {
-		return lr
-	}
-	return mr
-}
-
-// magic happens in here
-func getPos(p string) (row, col int) {
-	row = binsearch(p[:7], true)
-	col = binsearch(p[7:], false)
-
-	return row, col
-
-}
-
-func getHighest(seats map[int]*seat) (max int) {
-	for _, s := range seats {
-		if s.id > max {
-			max = s.id
-		}
-	}
-	return max
+func (s *seat) String() string {
+	return fmt.Sprintf("pass:'%s' id:'%d' row:'%d' col:'%d", s.pass, s.id, s.row, s.col)
 }
 
 func readInput(input string) (passids []string) {
@@ -97,38 +73,22 @@ func readInput(input string) (passids []string) {
 
 }
 
-func makeAllSeats(rows, cols int) [][]int {
-	allseats := make([][]int, rows)
-	for i := range allseats {
-		allseats[i] = make([]int, cols)
-	}
-	return allseats
-}
-
-func getEmptyseats(seats map[int]*seat) (empties []int) {
-	allseats := makeAllSeats(ROWS, COLS)
-	for _, s := range seats {
-		allseats[s.row][s.col] = 1
-	}
-	for r, row := range allseats {
-		for c, s := range row {
-			if s == 0 {
-				empties = append(empties, r*COLS+c)
-			}
-		}
-	}
-	return empties
-}
-
 func getMySeat(seats map[int]*seat) (myPossibleSeats []int) {
-	empties := getEmptyseats(seats)
-	for i := 1; i < len(empties)-1; i++ {
-		c := empties[i]
-		if empties[i-1] != c-1 && empties[i+1] != c+1 {
-			myPossibleSeats = append(myPossibleSeats, c)
+	for i := 1; i < COLS*ROWS-1; i++ {
+		if seats[i] == nil && seats[i-1] != nil && seats[i+1] != nil {
+			myPossibleSeats = append(myPossibleSeats, i)
 		}
 	}
 	return myPossibleSeats
+}
+
+func getHighest(seats map[int]*seat) (max int) {
+	for _, s := range seats {
+		if s.id > max {
+			max = s.id
+		}
+	}
+	return max
 }
 
 func main() {
@@ -140,6 +100,6 @@ func main() {
 	}
 	max := getHighest(allSeats)
 	fmt.Printf("The seat with the highest id is seat no: '%d'\n", max)
-	fmt.Printf("My seat is %v.\n", getMySeat(allSeats))
+	fmt.Printf("My seat is one of: %v\n", getMySeat(allSeats))
 
 }
