@@ -15,7 +15,7 @@ var testset []*testdata = []*testdata{{"example.txt", 11, 6}}
 func TestTaskOne(t *testing.T) {
 	for _, test := range testset {
 		groups := readAllGroups(test.fname)
-		c := countAllGroups(groups, countGroupsAnswersAnyone)
+		c := sumOverAllGroups(groups, countAnswersPerGroupAnyone)
 		if c != test.expectedtask1 {
 			t.Fatalf("Test '%s' failed. Got '%d' -  Wanted: '%d'", test.fname, c, test.expectedtask1)
 		}
@@ -25,7 +25,7 @@ func TestTaskOne(t *testing.T) {
 func TestTaskTwo(t *testing.T) {
 	for _, test := range testset {
 		groups := readAllGroups(test.fname)
-		c := countAllGroups(groups, countGroupsAnswersEveryone)
+		c := sumOverAllGroups(groups, countAnswersPerGroupEveryone)
 		if c != test.expectedtask2 {
 			t.Fatalf("Test '%s' failed. Got '%d' -  Wanted: '%d'", test.fname, c, test.expectedtask2)
 		}
