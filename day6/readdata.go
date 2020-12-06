@@ -8,22 +8,6 @@ import (
 	"strings"
 )
 
-// func readAllGroup(p string) (passport map[string]string) {
-
-// 	scanner := bufio.NewScanner(strings.NewReader(p))
-// 	scanner.Split(bufio.ScanWords)
-
-// 	passport = make(map[string]string)
-// 	for scanner.Scan() {
-// 		p := scanner.Text()
-
-// 		field := strings.Split(p, ":")
-// 		//log.Printf("f1: '%s', f2: '%s'\n", field[0], field[1])
-// 		passport[field[0]] = field[1]
-// 	}
-// 	return passport
-// }
-
 func readAllGroups(fname string) (groups [][]string) {
 
 	f, err := os.Open(fname)
