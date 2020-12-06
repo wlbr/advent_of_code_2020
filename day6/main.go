@@ -48,7 +48,4 @@ func main() {
 	fmt.Printf("Counting where ANYONE of a group answered YES  : %d\n", countAllGroups(groups, countGroupsAnswersAnyone))
 	fmt.Printf("Counting where EVERYONE of a group answered YES: %d\n", countAllGroups(groups, countGroupsAnswersEveryone))
 
-	// fmt.Printf("The seat with the highest id is seat no: '%d'\n", max)
-	// fmt.Printf("My seat is one of: %v\n", getMySeat(allSeats))
-
 }
