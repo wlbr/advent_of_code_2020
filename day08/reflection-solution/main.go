@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"reflect"
 	"strconv"
 )
 
@@ -43,15 +44,11 @@ type VonNeumannMachine struct {
 	akkumulator int
 	program     []*Instruction
 	cursor      int
-	commands    map[string]Command
+	// commands    map[string]Command
 }
 
 func NewVonNeumannMachine(program []*Instruction) *VonNeumannMachine {
-	m := &VonNeumannMachine{0, program, 0, make(map[string]Command)}
-	m.AddCommand("acc", acc)
-	m.AddCommand("jmp", jmp)
-	m.AddCommand("nop", nop)
-	return m
+	return &VonNeumannMachine{0, program, 0}
 }
 
 func (m *VonNeumannMachine) String() string {
@@ -70,10 +67,6 @@ func (m *VonNeumannMachine) Reset() {
 	m.akkumulator = 0
 }
 
-func (m *VonNeumannMachine) AddCommand(literal string, c Command) {
-	m.commands[literal] = c
-}
-
 func (m *VonNeumannMachine) checkUnFinished() bool {
 	if m.cursor < len(m.program) {
 		return true
@@ -90,6 +83,28 @@ func (m *VonNeumannMachine) checkInfiniteLoop() bool {
 	}
 }
 
+func (m *VonNeumannMachine) callCommand(lit string, param ...int) {
+	ifa := reflect.ValueOf(m)
+	method := ifa.MethodByName(lit)
+	if method.IsValid() {
+		var values []reflect.Value
+		for _, p := range param {
+			values = append(values, reflect.ValueOf(p))
+		}
+		method.Call(values)
+	} else {
+		log.Printf("Error: found unkown command: %s", lit)
+	}
+}
+
+// func (m *VonNeumannMachine) findCommand1(lit string) (Command, error) {
+// 	if c, ok := m.commands[lit]; ok {
+// 		return c, nil
+// 	} else {
+// 		return nil, fmt.Errorf("Warning: unknown command, ignored. '%s'", lit)
+// 	}
+// }
+
 func (m *VonNeumannMachine) mainLoop() (int, error) {
 	var err error
 	m.Reset()
@@ -98,21 +113,22 @@ func (m *VonNeumannMachine) mainLoop() (int, error) {
 			err = fmt.Errorf("Infinite Loop, cursor at %d", m.cursor)
 			break
 		}
-		if c, ok := m.commands[m.program[m.cursor].command]; ok {
-			c(m, m.program[m.cursor].parameter)
-		} else {
-			log.Printf("Warning: unknown command, ignored. '%s'", m.program[m.cursor])
-			m.cursor++
-		}
+		m.callCommand(m.program[m.cursor].command, m.program[m.cursor].parameter)
+		// if f, err := m.findCommand(m.program[m.cursor].command); err == nil {
+		// 	f(m, m.program[m.cursor].parameter)
+		// } else {
+		// 	log.Printf("Warning: unknown command, ignored. '%s'", m.program[m.cursor])
+		// 	m.cursor++
+		// }
 	}
 	return m.akkumulator, err
 }
 
 func (m *VonNeumannMachine) mutate(linenumber int) {
-	if m.program[linenumber].command == "jmp" {
-		m.program[linenumber].command = "nop"
-	} else if m.program[linenumber].command == "nop" {
-		m.program[linenumber].command = "jmp"
+	if m.program[linenumber].command == "Jmp" {
+		m.program[linenumber].command = "Nop"
+	} else if m.program[linenumber].command == "Nop" {
+		m.program[linenumber].command = "Jmp"
 	}
 
 }
@@ -123,6 +139,7 @@ func (m *VonNeumannMachine) bruteForceMutator() (int, error) {
 		m.mutate(i)
 		r, e := m.mainLoop()
 		if e == nil {
+			//res = r
 			return r, nil
 		}
 		m.program[i].command = backup
@@ -141,4 +158,5 @@ func main() {
 	} else {
 		fmt.Println(e)
 	}
+
 }
