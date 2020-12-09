@@ -35,7 +35,6 @@ func add(nums ...int) (sum int) {
 
 func checkPossibleSum(last []int, target int) bool {
 	result := false
-	//fmt.Println(last)
 	for i, m := range last {
 		for _, n := range last[i:] {
 			if add(m, n) == target {
@@ -56,34 +55,28 @@ func lookForFirstNotSum(nums []int, preamble int) int {
 	return result
 }
 
-func checkPossibleSumOfAll(nums []int, target int) (found bool, findings []int) {
-	for k := 0; k < len(nums)-1; k++ {
+func checkPossibleContiguesSum(nums []int, target int) (found bool, findings []int) {
+	for k := range nums {
 		n := nums[k:]
-
-		for i := 0; i < len(n)-1; i++ {
+		for i := range n {
 			m := add(n[:i]...)
 			if m == target {
-				found = true
-				findings = n[:i]
-				return found, findings
+				return true, n[:i]
 			}
 		}
 	}
-
-	return found, findings
+	return false, nil
 }
 
 func lookForSumOfContiguousSum(nums []int, target int) int {
 	result := 0
-
 	for i, t := range nums {
 		if t == target {
-			if r, findings := checkPossibleSumOfAll(nums[:i], target); r {
+			if r, findings := checkPossibleContiguesSum(nums[:i], target); r {
 				result = Min(findings...) + Max(findings...)
 			}
 		}
 	}
-
 	return result
 }
 
