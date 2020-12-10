@@ -36,27 +36,3 @@ type testcandidate struct {
 	in  int
 	out []int
 }
-
-var testcandidates []*testcandidate = []*testcandidate{{0, []int{1}}, {1, []int{4}}, {4, []int{5, 6, 7}}, {7, []int{10}}, {10, []int{11, 12}}, {16, []int{19}}, {19, []int{}}}
-
-func allEqual(a1, a2 []int) bool {
-	if len(a1) != len(a2) {
-		return false
-	}
-	for i := range a1 {
-		if a1[i] != a2[i] {
-			return false
-		}
-	}
-	return true
-}
-
-func TestGetCandidates(t *testing.T) {
-	nums := readdata("example1.txt")
-	for _, test := range testcandidates {
-		c := getCandidates(nums, test.in)
-		if !allEqual(c, test.out) {
-			t.Fatalf("Test getCandidates('%d') failed. Got '%v' -  Wanted: '%v'", test.in, c, test.out)
-		}
-	}
-}
