@@ -16,7 +16,7 @@ var testset2 *testdata = &testdata{"example.txt", []string{"iteration2-1.txt", "
 func TestTaskOne(t *testing.T) {
 	it := readdata(testset1.fname)
 	for _, iteration := range testset1.expectedtask1 {
-		it = getNewIterationTask1(it)
+		it = getNewIteration(it, 4, 1)
 		exait := readdata(iteration)
 		c := compare(it, exait)
 		if !c {
@@ -47,7 +47,7 @@ func TestTaskTwo(t *testing.T) {
 
 	for _, iteration := range testset2.expectedtask1 {
 		old := new
-		new = getNewIterationTask2(new)
+		new = getNewIteration(new, 5, -1)
 		expected := readdata(iteration)
 		c := compare(new, expected)
 		if !c {
