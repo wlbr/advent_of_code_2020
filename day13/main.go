@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime"
 	"sync"
+	"time"
 )
 
 const MaxUint = ^uint(0)
@@ -16,6 +17,18 @@ func MinBus(v ...int) (min, index int) {
 	n := -1
 	for i, e := range v {
 		if e < m {
+			m = e
+			n = i
+		}
+	}
+	return m, n
+}
+
+func MaxBus(v ...int) (max, index int) {
+	m := v[0]
+	n := -1
+	for i, e := range v {
+		if e > m {
 			m = e
 			n = i
 		}
@@ -64,12 +77,53 @@ func isValidSequence(ts int, busses []int) bool {
 	return r
 }
 
-func searchChunk(start, end int, busses []int) (r int) {
+func searchChunk(start, end, max, c int, busses []int) (r int) {
+	for i := calcNextTimeForBus(start, max); i < end; i = i + max {
+		j := i - c
+		//fmt.Printf("i: %d i%%%d: %d  i%%%d: %d  \n", j, busses[0], i%busses[0], max, i%max)
+		if j%busses[0] == 0 {
+			v := isValidSequence(j, busses)
+			if v {
+				r = j
+				break
+			}
+		}
+	}
+	return r
+}
+
+func searchChunk2(start, end int, busses []int) (r int) {
 	for i := start; i < end; i++ {
 		v := isValidSequence(i, busses)
 		if v {
 			r = i
 			break
+		}
+	}
+	return r
+}
+
+func searchChunk3(start, end, max, c int, busses []int) (r int) {
+	for i := start; i < end; i = calcNextTimeForBus(i, busses[0]) {
+		v := isValidSequence(i, busses)
+		if v {
+			r = i
+			break
+		}
+	}
+	return r
+}
+
+func searchChunk4(start, end, max, c int, busses []int) (r int) {
+	for i := calcNextTimeForBus(start, max); i < end; i = i + max {
+		j := i - c
+		//fmt.Printf("i: %d i%%%d: %d  i%%%d: %d  \n", j, busses[0], i%busses[0], max, i%max)
+		if j%busses[0] == 0 {
+			v := isValidSequence(j, busses)
+			if v {
+				r = j
+				break
+			}
 		}
 	}
 	return r
@@ -85,11 +139,12 @@ type worker struct {
 func (w *worker) run() {
 	defer w.wg.Done()
 	for j := range w.inconmigJobs {
+		tsstart := time.Now()
 		if j.start == -1 { // catch kill signal
 			break
 		} else {
-			r := searchChunk(j.start, j.end, j.busses)
-			//fmt.Printf("Worker: %d  Set: [%d-%d]  r: %d\n", w.id, j.start, j.end, r)
+			r := searchChunk(j.start, j.end, j.max, j.maxoffset, j.busses)
+			fmt.Printf("Worker %d finished.  Set: [%d - %d]  r: %d. Took %s \n", w.id, j.start, j.end, r, time.Now().Sub(tsstart))
 			if r != 0 {
 				w.results <- r
 			}
@@ -99,13 +154,13 @@ func (w *worker) run() {
 
 func stopWorkers(ws []*worker) {
 	for _, w := range ws {
-		w.inconmigJobs <- &Job{-1, 0, []int{}}
+		w.inconmigJobs <- &Job{-1, 0, 0, 0, []int{}}
 	}
 }
 
 type Job struct {
-	start, end int
-	busses     []int
+	start, end, max, maxoffset int
+	busses                     []int
 }
 
 func findBusSequenceMT(busses []int) (result int) {
@@ -131,11 +186,10 @@ func findBusSequenceMT(busses []int) (result int) {
 		}
 	}(res)
 
-	//      1068781
-	//      1000001
-	step := 10000000000
-	for j := 1; j <= MaxInt; j += step {
-		jj := &Job{j, j + step, busses}
+	step := 100000000000
+	m, c := MaxBus(busses...)
+	for j := 0; j <= MaxInt; j += step {
+		jj := &Job{j, j + step, m, c, busses}
 		if result != 0 {
 			stopWorkers(workers)
 			break
