@@ -52,21 +52,8 @@ func getNextBus(start int, busses []int) (bus, departure, result int) {
 	return busses[bus], dep, (dep - start) * busses[bus]
 }
 
-func busRidesAtTimeStamp(start, ts, bus int) bool {
-	if bus == -1 {
-		return true
-	}
-	d := ts % bus
-	if d == 0 {
-		return true
-	} else {
-		return false
-	}
-}
-
 func isValidSequence(ts int, busses []int) bool {
 	r := true
-	//log.Print("ts: ", ts, "  busses ", busses)
 	for i, b := range busses {
 		if b != -1 {
 			if 0 != ((ts + i) % b) {
@@ -77,10 +64,26 @@ func isValidSequence(ts int, busses []int) bool {
 	return r
 }
 
-func searchChunk(start, end, max, c int, busses []int) (r int) {
+func searchChunk(start, end, max, maxoffset int, busses []int) (r int) {
+	step := max * busses[0]
+	m := (max + maxoffset)
+	for i := calcNextTimeForBus(start, step); i < end; i = i + step {
+		j := i - m
+		if j%busses[0] == 0 {
+			v := isValidSequence(j, busses)
+			if v {
+				r = j
+				break
+			}
+		}
+
+	}
+	return r
+}
+
+func searchChunk4(start, end, max, maxoffset int, busses []int) (r int) {
 	for i := calcNextTimeForBus(start, max); i < end; i = i + max {
-		j := i - c
-		//fmt.Printf("i: %d i%%%d: %d  i%%%d: %d  \n", j, busses[0], i%busses[0], max, i%max)
+		j := i - maxoffset
 		if j%busses[0] == 0 {
 			v := isValidSequence(j, busses)
 			if v {
@@ -103,27 +106,12 @@ func searchChunk2(start, end int, busses []int) (r int) {
 	return r
 }
 
-func searchChunk3(start, end, max, c int, busses []int) (r int) {
+func searchChunk3(start, end int, busses []int) (r int) {
 	for i := start; i < end; i = calcNextTimeForBus(i, busses[0]) {
 		v := isValidSequence(i, busses)
 		if v {
 			r = i
 			break
-		}
-	}
-	return r
-}
-
-func searchChunk4(start, end, max, c int, busses []int) (r int) {
-	for i := calcNextTimeForBus(start, max); i < end; i = i + max {
-		j := i - c
-		//fmt.Printf("i: %d i%%%d: %d  i%%%d: %d  \n", j, busses[0], i%busses[0], max, i%max)
-		if j%busses[0] == 0 {
-			v := isValidSequence(j, busses)
-			if v {
-				r = j
-				break
-			}
 		}
 	}
 	return r
@@ -186,7 +174,7 @@ func findBusSequenceMT(busses []int) (result int) {
 		}
 	}(res)
 
-	step := 100000000000
+	step := 1000000000000
 	m, c := MaxBus(busses...)
 	for j := 0; j <= MaxInt; j += step {
 		jj := &Job{j, j + step, m, c, busses}
@@ -197,6 +185,7 @@ func findBusSequenceMT(busses []int) (result int) {
 		in <- jj
 	}
 	wg.Wait()
+
 	close(in)
 	close(res)
 
