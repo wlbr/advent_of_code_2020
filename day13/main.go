@@ -131,7 +131,7 @@ func (w *worker) run() {
 		if j.start == -1 { // catch kill signal
 			break
 		} else {
-			r := searchChunk(j.start, j.end, j.max, j.maxoffset, j.busses)
+			r := searchChunk4(j.start, j.end, j.max, j.maxoffset, j.busses)
 			fmt.Printf("Worker %d finished.  Set: [%d - %d]  r: %d. Took %s \n", w.id, j.start, j.end, r, time.Now().Sub(tsstart))
 			if r != 0 {
 				w.results <- r
