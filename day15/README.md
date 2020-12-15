@@ -37,6 +37,7 @@ Here are a few more examples:
    * Given the starting numbers 3,1,2, the 2020th number spoken is 1836.
    * Given your starting numbers, what will be the 2020th number spoken?
 
+Given your starting numbers, __what will be the 30000000th number spoken?__
 
 Your puzzle input is 6,19,0,5,7,13,1.
 
@@ -53,7 +54,8 @@ Impressed, the Elves issue you a challenge: determine the 30000000th number spok
    * Given 2,3,1, the 30000000th number spoken is 6895259.
    * Given 3,2,1, the 30000000th number spoken is 18.
    * Given 3,1,2, the 30000000th number spoken is 362.
-   * Given your starting numbers, what will be the 30000000th number spoken?
+
+Given your starting numbers, __what will be the 30000000th number spoken?__
 
 Your puzzle input still is 6,19,0,5,7,13,1.
 
