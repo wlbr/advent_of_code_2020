@@ -44,9 +44,9 @@ Here, the earliest timestamp you could depart is 939, and the bus IDs in service
 
 The earliest bus you could take is bus ID 59. It doesn't depart until timestamp 944, so you would need to wait 944 - 939 = 5 minutes before it departs. Multiplying the bus ID by the number of minutes you'd need to wait gives 295.
 
-What is the ID of the earliest bus you can take to the airport multiplied by the number of minutes you'll need to wait for that bus?
+__What is the ID of the earliest bus you can take to the airport multiplied by the number of minutes you'll need to wait for that bus?__
 
->Your puzzle answer was 3464.
+> Your puzzle answer was 3464.
 
 ## Part Two
 The shuttle company is running a contest: one gold coin for anyone that can find the earliest timestamp such that the first bus ID departs at that time and each subsequent listed bus ID departs at that subsequent minute. (The first line in your input is no longer relevant.)
@@ -109,8 +109,8 @@ Here are some other examples:
 
 However, with so many bus IDs in your list, surely the actual earliest timestamp will be larger than 100000000000000!
 
-What is the earliest timestamp such that all of the listed bus IDs depart at offsets matching their positions in the list?
+__What is the earliest timestamp such that all of the listed bus IDs depart at offsets matching their positions in the list?__
 
+> Your puzzle answer was 760171380521445.
 >
->
->
+> Both parts of this puzzle are complete! They provide two gold stars: **
